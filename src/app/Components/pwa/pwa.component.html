@@ -1,0 +1,111 @@
+<div class="container-fluid">
+    <mat-card>
+      <mat-card-title>
+        <div class="row rowMargin">
+          <div class="col-sm-12 text-center">
+            <strong>Orders</strong>
+            <button type="button" class="btn btn-primary btn-md btn-right" (click)="addNew()">Add Order
+              <i class="fa fa-plus"></i>
+            </button>
+          </div>
+        </div>
+        <mat-divider></mat-divider>
+      </mat-card-title>
+      <div class="row">
+        <div class="col-sm-12">
+          <div class="table-responsie text-center">
+            <table class="table table-bordered table-striped table-sm text-nowrap" cellsspacing="0" width="100%">
+              <thead>
+                <tr>
+                  <th [mdbTableSort]="searchInfo" sortBy="{{item.key}}" *ngFor="let item of getHeader;trackBy:trackByFn">
+                    {{item.value}} <i class="fa fa-sort btn-right"></i></th>
+                  <th>Action</th>
+                </tr>
+                <tr>
+                  <td *ngFor="let items of getHeader; trackBy: trackByFn;let i = index">
+                    <input type="text" class="formStyle" name="items{{i}}" placeholder="Search" #items{{i}}="ngModel"
+                      [(ngModel)]="filterArray[items.key]" (keyup)="filterTable()">
+                  </td>
+                  <td></td>
+                </tr>
+              </thead>
+              <tbody>
+                <tr
+                  *ngFor="let item of searchInfo | paginate: { id:'coupon-pagination', itemsPerPage: 20, currentPage: p };trackBy:trackByFn;">
+                  <td *ngFor="let head of getHeader;trackByFn:trackByFn">{{item[head.key]}}</td>
+                  <td>
+                    <button mat-icon-button color="accent" (click)="startEdit(true,item)">
+                      <mat-icon aria-label="Edit">edit</mat-icon>
+                    </button>
+                    <button mat-icon-button color="accent" (click)="confirmPopUp(item)">
+                      <mat-icon aria-label="Delete">delete</mat-icon>
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <tfoot [hidden]="searchInfo.length <= 20">
+            <pagination-controls id="coupon-pagination" (pageChange)="p = $event"></pagination-controls>
+          </tfoot>
+        </div>
+      </div>
+    </mat-card>
+  </div>
+  <app-medium-modal #largeOrderModal [title]="'Order Details'">
+    <form #EditProductform>
+      <div class="row">
+        <div class="col-sm-4">
+          <mat-form-field class="full-width">
+            <input matInput required placeholder="Order Status" name="orderStatus"
+              [(ngModel)]="incomingOrderModel.OrderStatus" #orderStatus="ngModel">
+          </mat-form-field>
+        </div>
+        <div class="col-sm-4">
+          <mat-form-field class="full-width">
+            <input matInput [matDatepicker]="picker" placeholder="Order Date" name="orderDate" #orderDate="ngModel"
+              [(ngModel)]="incomingOrderModel.OrderDate">
+            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+            <mat-datepicker #picker></mat-datepicker>
+          </mat-form-field>
+        </div>
+        <div class="col-sm-4">
+          <mat-form-field class="full-width">
+            <input matInput required placeholder="User Details" name="user" [(ngModel)]="incomingOrderModel.User"
+              #user="ngModel">
+          </mat-form-field>
+        </div>
+        <div class="col-sm-4">
+          <mat-form-field class="full-width">
+            <input matInput [matDatepicker]="picker1" placeholder="DeliveryDate" name="DeliveryDate"
+              #DeliveryDate="ngModel" [(ngModel)]="incomingOrderModel.DeliveryDate">
+            <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+            <mat-datepicker #picker1></mat-datepicker>
+          </mat-form-field>
+        </div>
+        <div class="col-sm-4">
+          <mat-form-field class="full-width">
+            <input matInput required placeholder="Quantity" name="Quantity" [(ngModel)]="incomingOrderModel.Quantity"
+              #Quantity="ngModel">
+          </mat-form-field>
+        </div>
+        <div class="col-sm-12 text-center">
+          <button type="button" class="btn btn-primary btn-md" [disabled]="EditProductform.invalid"
+            (click)="Order(incomingOrderModel,Button)">{{Button}}
+            <i class="fa fa-paper-plane"></i>
+          </button>
+        </div>
+      </div>
+    </form>
+  </app-medium-modal>
+  
+  
+  
+  <app-medium-modal #DeleteModal [title]="'Delete Order'">
+    <div class="text-center">
+      <h5>Are You Sure?</h5>
+      <button type="button" class="btn btn-outline-danger btn-md" (click)="confirmDelete()">Yes
+        &nbsp;<i class="fa fa-times-circle"></i>
+      </button>
+    </div>
+  </app-medium-modal>
