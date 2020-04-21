@@ -16,7 +16,7 @@ import { OnlineOfflineService } from '../onlineoffline/onlineoffline.service';
 })
 export class InterceptorService {
   public indexDb: any;
-  public fields: { id: string; url: string; body: any };
+  public fields: { id: string; url: string; body: any; type: string };
   private apiCount: number;
   constructor(
     private httpClient: HttpClient,
@@ -56,9 +56,11 @@ export class InterceptorService {
         })
       );
     } else {
-      this.fields = { id: UUID.UUID(), url: request.url, body: request.body };
-      this.createDatabase();
-      this.addToIndexedDb(this.fields);
+      if (request.method !== "GET") {
+        this.fields = { id: UUID.UUID(), url: request.url, body: request.body, type: request.method };
+        this.createDatabase();
+        this.addToIndexedDb(this.fields);
+      }
     }
   }
 
@@ -92,14 +94,24 @@ export class InterceptorService {
   public async sendItemsFromIndexedDb() {
     const allItems: any[] = await this.indexDb.spaceAuto.toArray();
     allItems.forEach(item => {
-      this.resendData(item.url, item.body).subscribe();
+      this.resendData(item.url, item.body, item.type).subscribe();
       this.indexDb.spaceAuto.delete(item.id).then(() => {
         console.log(`item ${item.id} sent and deleted locally`);
       });
     });
   }
 
-  public resendData = (url, data) => {
-    return this.httpClient.post(url, data).pipe(map(x => x));
+  public resendData = (url, data, type) => {
+    switch (type) {
+      case "POST":
+        return this.httpClient.post(url, data).pipe(map(x => x));
+        break;
+      case "PUT":
+        return this.httpClient.put(url, data).pipe(map(x => x));
+        break;
+      case "DELETE":
+        return this.httpClient.delete(url, data).pipe(map(x => x));
+        break;
+    }
   }
 }

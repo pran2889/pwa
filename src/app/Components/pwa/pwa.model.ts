@@ -1,10 +1,7 @@
 export interface IIncomingModel {
-    OrderID: number;
-    OrderStatus: string;
-    OrderDate: Date;
-    User: string;
-    DeliveryDate: Date;
-    Quantity: number;
-    Total: number;
-    Input: string;
+    id: number,
+    employee_name: string,
+    employee_salary: string,
+    employee_age: number
+    profile_image: string
 }

@@ -9,26 +9,18 @@ import { map } from 'rxjs/operators';
 export class PwaService {
   constructor(private httpClient: HttpClient) { }
 
-  getAllOrders = () => {
-    const url = environment.apiUrl + `/api/Order/GetAllOrderDetails`;
+  getAllEmployees = () => {
+    const url = environment.apiUrl + `/api/v1/employees`;
     return this.httpClient.get(url).pipe(map(x => x));
   }
-  getOrderByStatus = (status) => {
-    const url = environment.apiUrl + `/api/Order/GetOrderDetailsByStatus`;
+  getEmployeeById = (empId) => {
+    const url = environment.apiUrl + `/api/v1/employee`;
     const data = {
-      iOrderStatusName: status
+      id: empId
     };
     return this.httpClient
       .post(url, JSON.stringify(data), this.header())
       .pipe(map(x => x));
-  }
-  getProductsByOrderID = () => {
-    const url = environment.apiUrl + `/api/Order/GetProductsByOrderID`;
-    return this.httpClient.get(url).pipe(map(x => x));
-  }
-  getUserDetailsByOrderID = () => {
-    const url = environment.apiUrl + `/api/Order/GetUserDetailsByOrderID`;
-    return this.httpClient.get(url).pipe(map(x => x));
   }
 
   public uuidv4() {
@@ -38,42 +30,27 @@ export class PwaService {
       return v.toString(16);
     });
   }
-  orderInsert = (model) => {
+  employeeInsert = (model) => {
     const data = {
-      OrderStatus: model.OrderStatus,
-      iStartDate: model.OrderDate,
-      iLoginID: model.User,
-      iCreatedBy: model.createdby,
-      iSessionID: (localStorage.getItem(`userSession`) &&  localStorage.getItem(`userSession`) === null) ? localStorage.getItem(`userSession`) : this.uuidv4(),
-      iExpectedDeliveryDate: model.DeliveryDate,
-      iOrderQuantity: model.Quantity,
-      iSubTotal: model.Total ? model.Total : 0,
-      iProductInAvailableInQuantitiesID: model.availableQty ? model.availableQty : 1
+      "name": model.employee_name,
+      "salary": model.employee_salary,
+      "age": model.employee_age
     };
-    const url = `${environment.apiUrl}/api/order/Order_Insert`;
+    const url = `${environment.apiUrl}/api/v1/create`;
     return this.httpClient.post(url, data).pipe(map(x => x));
   }
-  orderUpdate = (model) => {
+  employeeUpdate = (model) => {
     const data = {
-      OrderStatus: model.OrderStatus,
-      iStartDate: model.OrderDate,
-      iExpectedDeliveryDate: model.DeliveryDate,
-      iOrderQuantity: Number(model.Quantity),
-      iDiscountPercentage: model.Discount ? model.Discount : 0,
-      iValueInPercentage: model.ValueInPercentage ? model.ValueInPercentage : 0,
-      iEndDate: model.EndDate ? model.EndDate : null,
-      iCouponID: model.CouponID ? model.CouponID : null,
-      iOrderId: model.OrderID
+      "name": model.employee_name,
+      "salary": model.employee_salary,
+      "age": model.employee_age
     };
-    const url = `${environment.apiUrl}/api/order/Order_Update`;
-    return this.httpClient.post(url, data).pipe(map(x => x));
+    const url = `${environment.apiUrl}/api/v1/update/` + model.id;
+    return this.httpClient.put(url, data).pipe(map(x => x));
   }
-  orderDelete = (model) => {
-    const data = {
-      iOrderId: model.OrderID,
-    };
-    const url = `${environment.apiUrl}/api/order/Order_Delete`;
-    return this.httpClient.post(url, data).pipe(map(x => x));
+  employeeDelete = (model) => {
+    const url = `${environment.apiUrl}/api/v1/delete/` + model.id;
+    return this.httpClient.delete(url).pipe(map(x => x));
   }
 
   public header() {

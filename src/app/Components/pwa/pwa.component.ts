@@ -14,155 +14,142 @@ import { MediumModalComponent } from 'src/app/Shared/components/modals/medium-mo
 })
 export class PwaComponent implements OnInit, OnDestroy {
   public displayedColumns = [
-    'OrderID',
-    'OrderStatus',
-    'OrderDate',
-    'User',
-    'DeliveryDate',
-    'Quantity',
-    'Total',
-    'actions'
+    'id',
+    'employee_name',
+    'employee_salary',
+    'employee_age',
+    'profile_image'
   ];
   public getHeader = [
-    { key: 'OrderID', value: '#Order Id' },
-    { key: 'OrderStatus', value: 'Order Status' },
-    { key: 'OrderDate', value: 'Order Date' },
-    { key: 'User', value: 'User' },
-    { key: 'DeliveryDate', value: 'Delivery Date' },
-    { key: 'Quantity', value: 'Quantity' },
-    { key: 'Total', value: 'Total' }
+    { key: 'id', value: '#Employee Id' },
+    { key: 'employee_name', value: 'Employee Name' },
+    { key: 'employee_salary', value: 'Salary' },
+    { key: 'employee_age', value: 'Age' },
+    { key: 'profile_image', value: 'Photo' }
   ];
 
   public filterArray: string[] = [];
-  public incomingOrderModel: IIncomingModel = {} as IIncomingModel;
+  public incomingEmployeeModel: IIncomingModel = {} as IIncomingModel;
   public dataSource: MatTableDataSource<object>;
-  public EditOrderItem: string[] = [];
-  public DeleteOrderDetails: string[] = [];
+  public EditEmployeeItem: string[] = [];
+  public DeleteEmployeeDetails: string[] = [];
   public searchInfo: any[] = [];
   public p: number;
   public TempDetails: string[] = [];
 
-  @ViewChild('largeOrderModal') largeOrderModal: MediumModalComponent;
+  @ViewChild('largeEmployeeModal') largeEmployeeModal: MediumModalComponent;
   @ViewChild('DeleteModal') DeleteModal: MediumModalComponent;
 
-  public getAllIncomingOrdersSubscription: Subscription;
-  public deleteOrderSubscription: Subscription;
-  public UpdateOrderSubscription: Subscription;
+  public getAllIncomingEmployeesSubscription: Subscription;
+  public deleteEmployeeSubscription: Subscription;
+  public UpdateEmployeeSubscription: Subscription;
   Button: string;
 
   constructor(
     private pwaService: PwaService,
     private snackbar: MatSnackBar,
     private datePipe: DatePipe
-  ) {}
+  ) { }
 
   ngOnInit() {
-    this.getAllIncomingOrders();
+    this.getAllIncomingEmployees();
   }
 
-  getAllIncomingOrders = () => {
-    this.getAllIncomingOrdersSubscription = this.pwaService
-      .getOrderByStatus('incoming')
+  getAllIncomingEmployees = () => {
+    this.getAllIncomingEmployeesSubscription = this.pwaService
+      .getAllEmployees()
       .subscribe(response => {
         this.searchInfo = this.TempDetails = response[`data`];
-        // this.dataSource = new MatTableDataSource(response[`data`]);
-        // this.ref.detectChanges();
-        // this.dataSource.sort = this.sort;
       });
   }
-  Order = (modeldata, input) => {
+
+  Employee = (modeldata, input) => {
     modeldata.Input = input;
     modeldata.createdby = `employee`;
     switch (input) {
       case 'Insert':
-        this.pwaService.orderInsert(modeldata).subscribe(response => {
+        this.pwaService.employeeInsert(modeldata).subscribe(response => {
           if (response && response[`data`]) {
             this.searchInfo.push({
-              OrderID: response[`data`][0][`OutId`],
-              OrderStatus: modeldata.OrderStatus,
-              OrderDate: this.datePipe.transform(new Date(modeldata.OrderDate), 'yyyy-MM-dd h:mm a'),
-              User: modeldata.User,
-              DeliveryDate: this.datePipe.transform(new Date(modeldata.DeliveryDate), 'yyyy-MM-dd h:mm a'),
-              Total: modeldata.Total ? modeldata.Total : 0,
-              Quantity: modeldata.Quantity,
+              id: response['data']['id'],
+              employee_name: response['data']['name'],
+              employee_salary: response['data']['salary'],
+              employee_age: response['data']['age'],
             });
-            this.snackbar.open('Order' + input + 'ed Successfully', 'Close', {
+            this.snackbar.open('Employee ' + input + 'ed Successfully', 'Close', {
               duration: 3000
             });
           } else {
-            this.snackbar.open('Order ' + input + 'ion Failed', 'Close', {
+            this.snackbar.open('Employee ' + input + 'ion Failed', 'Close', {
               duration: 3000
             });
           }
         });
         break;
       case 'Update':
-        this.pwaService.orderUpdate(modeldata).subscribe(response => {
-          if (response && response[`data`]) {
-            this.snackbar.open('Order' + input + 'ed Successfully', 'Close', {
+        this.pwaService.employeeUpdate(modeldata).subscribe(response => {
+          if (response['status'] == "success") {
+            this.snackbar.open('Employee ' + input + 'ed Successfully', 'Close', {
               duration: 3000
             });
           } else {
-            this.snackbar.open('Order ' + input + 'ion Failed', 'Close', {
+            this.snackbar.open('Employee ' + input + 'ion Failed', 'Close', {
               duration: 3000
             });
           }
         });
         break;
       case 'Delete':
-        this.pwaService.orderDelete(modeldata).subscribe(response => {
+        this.pwaService.employeeDelete(modeldata).subscribe(response => {
           if (response && response[`data`]) {
-            this.snackbar.open('Order ' + input + 'ed Successfully', 'Close', {
+            this.snackbar.open('Employee ' + input + 'ed Successfully', 'Close', {
               duration: 3000
             });
           } else {
-            this.snackbar.open('Order ' + input + 'ion  Failed', 'Close', {
+            this.snackbar.open('Employee ' + input + 'ion  Failed', 'Close', {
               duration: 3000
             });
           }
         });
         break;
     }
-    this.largeOrderModal.hide();
+    this.largeEmployeeModal.hide();
   }
 
   addNew = () => {
     this.Button = 'Insert';
-    this.incomingOrderModel = {} as IIncomingModel;
-    this.incomingOrderModel.OrderStatus = `incoming`;
-    this.incomingOrderModel.OrderDate = new Date();
-    this.incomingOrderModel.DeliveryDate = new Date();
-    this.largeOrderModal.show();
+    this.incomingEmployeeModel = {} as IIncomingModel;
+    this.largeEmployeeModal.show();
   }
 
-  startEdit = (event, orderDetails) => {
+  startEdit = (event, EmployeeDetails) => {
     this.Button = 'Update';
-    orderDetails.DeliveryDate = new Date(orderDetails.DeliveryDate)
-    this.incomingOrderModel = orderDetails;
-    this.largeOrderModal.show();
+    EmployeeDetails.DeliveryDate = new Date(EmployeeDetails.DeliveryDate)
+    this.incomingEmployeeModel = EmployeeDetails;
+    this.largeEmployeeModal.show();
   }
 
   confirmPopUp = item => {
     this.DeleteModal.show();
-    this.DeleteOrderDetails = item;
+    this.DeleteEmployeeDetails = item;
   }
-  // Confirm Delete Order
+  // Confirm Delete Employee
   confirmDelete = () => {
-    this.pwaService.orderDelete(this.DeleteOrderDetails).subscribe(
+    this.pwaService.employeeDelete(this.DeleteEmployeeDetails).subscribe(
       response => {
-        this.snackbar.open('Order deleted Successfully', 'Close', {
+        this.snackbar.open('Employee deleted Successfully', 'Close', {
           duration: 3000
         });
         this.DeleteModal.hide();
         const index = this.searchInfo.findIndex(
-          x => x[`OrderID`] === response[`data`][0][`OutId`]
+          x => x['id'] === this.DeleteEmployeeDetails['id']
         );
         if (index !== -1) {
           this.searchInfo.splice(index, 1);
         }
       },
       error => {
-        this.snackbar.open('Order deletion failed', 'Close', {
+        this.snackbar.open('Employee deletion failed', 'Close', {
           duration: 3000
         });
         this.DeleteModal.hide();
@@ -196,14 +183,14 @@ export class PwaComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.getAllIncomingOrdersSubscription
-      ? this.getAllIncomingOrdersSubscription.unsubscribe()
+    this.getAllIncomingEmployeesSubscription
+      ? this.getAllIncomingEmployeesSubscription.unsubscribe()
       : null;
-    this.deleteOrderSubscription
-      ? this.deleteOrderSubscription.unsubscribe()
+    this.deleteEmployeeSubscription
+      ? this.deleteEmployeeSubscription.unsubscribe()
       : null;
-    this.UpdateOrderSubscription
-      ? this.UpdateOrderSubscription.unsubscribe()
+    this.UpdateEmployeeSubscription
+      ? this.UpdateEmployeeSubscription.unsubscribe()
       : null;
   }
 }

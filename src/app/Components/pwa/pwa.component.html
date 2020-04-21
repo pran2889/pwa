@@ -3,8 +3,8 @@
       <mat-card-title>
         <div class="row rowMargin">
           <div class="col-sm-12 text-center">
-            <strong>Orders</strong>
-            <button type="button" class="btn btn-primary btn-md btn-right" (click)="addNew()">Add Order
+            <strong>Employees</strong>
+            <button type="button" class="btn btn-primary btn-md btn-right" (click)="addNew()">Add Employee
               <i class="fa fa-plus"></i>
             </button>
           </div>
@@ -14,7 +14,7 @@
       <div class="row">
         <div class="col-sm-12">
           <div class="table-responsie text-center">
-            <table class="table table-bordered table-striped table-sm text-nowrap" cellsspacing="0" width="100%">
+            <table class="table table-bEmployeeed table-striped table-sm text-nowrap" cellsspacing="0" width="100%">
               <thead>
                 <tr>
                   <th [mdbTableSort]="searchInfo" sortBy="{{item.key}}" *ngFor="let item of getHeader;trackBy:trackByFn">
@@ -52,46 +52,30 @@
       </div>
     </mat-card>
   </div>
-  <app-medium-modal #largeOrderModal [title]="'Order Details'">
-    <form #EditProductform>
+  <app-medium-modal #largeEmployeeModal [title]="'Employee Details'">
+    <form #EditEmployeeform>
       <div class="row">
         <div class="col-sm-4">
           <mat-form-field class="full-width">
-            <input matInput required placeholder="Order Status" name="orderStatus"
-              [(ngModel)]="incomingOrderModel.OrderStatus" #orderStatus="ngModel">
+            <input matInput required placeholder="Employee Name" name="EmployeeName"
+              [(ngModel)]="incomingEmployeeModel.employee_name" #EmployeeStatus="ngModel">
+          </mat-form-field>
+        </div>       
+        <div class="col-sm-4">
+          <mat-form-field class="full-width">
+            <input matInput required placeholder="Salary" name="Salary" [(ngModel)]="incomingEmployeeModel.employee_salary"
+              #Quantity="ngModel">
           </mat-form-field>
         </div>
         <div class="col-sm-4">
           <mat-form-field class="full-width">
-            <input matInput [matDatepicker]="picker" placeholder="Order Date" name="orderDate" #orderDate="ngModel"
-              [(ngModel)]="incomingOrderModel.OrderDate">
-            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-            <mat-datepicker #picker></mat-datepicker>
-          </mat-form-field>
-        </div>
-        <div class="col-sm-4">
-          <mat-form-field class="full-width">
-            <input matInput required placeholder="User Details" name="user" [(ngModel)]="incomingOrderModel.User"
-              #user="ngModel">
-          </mat-form-field>
-        </div>
-        <div class="col-sm-4">
-          <mat-form-field class="full-width">
-            <input matInput [matDatepicker]="picker1" placeholder="DeliveryDate" name="DeliveryDate"
-              #DeliveryDate="ngModel" [(ngModel)]="incomingOrderModel.DeliveryDate">
-            <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
-            <mat-datepicker #picker1></mat-datepicker>
-          </mat-form-field>
-        </div>
-        <div class="col-sm-4">
-          <mat-form-field class="full-width">
-            <input matInput required placeholder="Quantity" name="Quantity" [(ngModel)]="incomingOrderModel.Quantity"
+            <input matInput required placeholder="Employee Age" name="Age" [(ngModel)]="incomingEmployeeModel.employee_age"
               #Quantity="ngModel">
           </mat-form-field>
         </div>
         <div class="col-sm-12 text-center">
-          <button type="button" class="btn btn-primary btn-md" [disabled]="EditProductform.invalid"
-            (click)="Order(incomingOrderModel,Button)">{{Button}}
+          <button type="button" class="btn btn-primary btn-md" [disabled]="EditEmployeeform.invalid"
+            (click)="Employee(incomingEmployeeModel,Button)">{{Button}}
             <i class="fa fa-paper-plane"></i>
           </button>
         </div>
@@ -101,7 +85,7 @@
   
   
   
-  <app-medium-modal #DeleteModal [title]="'Delete Order'">
+  <app-medium-modal #DeleteModal [title]="'Delete Employee'">
     <div class="text-center">
       <h5>Are You Sure?</h5>
       <button type="button" class="btn btn-outline-danger btn-md" (click)="confirmDelete()">Yes
