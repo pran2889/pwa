@@ -32,24 +32,24 @@ export class PwaService {
   }
   employeeInsert = (model) => {
     const data = {
-      "name": model.name,
-      "salary": model.salary,
-      "age": model.age
+      name: model.name,
+      salary: model.salary,
+      age: model.age
     };
     const url = `${environment.apiUrl}/employee.json`;
     return this.httpClient.post(url, data).pipe(map(x => x));
   }
   employeeUpdate = (model) => {
     const data = {
-      "name": model.name,
-      "salary": model.salary,
-      "age": model.age
+      name: model.name,
+      salary: model.salary,
+      age: model.age
     };
-    const url = `${environment.apiUrl}/employee/` + model.id+`.json`;
+    const url = `${environment.apiUrl}/employee/` + model.id + `.json`;
     return this.httpClient.put(url, data).pipe(map(x => x));
   }
   employeeDelete = (model) => {
-    const url = `${environment.apiUrl}/employee/` + model.id+`.json`;
+    const url = `${environment.apiUrl}/employee/` + model.id + `.json`;
     return this.httpClient.delete(url).pipe(map(x => x));
   }
 

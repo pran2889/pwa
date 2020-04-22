@@ -58,7 +58,7 @@ export class InterceptorService {
         })
       );
     } else {
-      if (request.method !== "GET") {
+      if (request.method !== 'GET') {
         this.fields = { id: UUID.UUID(), url: request.url, body: request.body, type: request.method };
         this.createDatabase();
         this.addToIndexedDb(this.fields);
@@ -99,7 +99,7 @@ export class InterceptorService {
       this.resendData(item.url, item.body, item.type).subscribe();
       this.indexDb.spaceAuto.delete(item.id).then(() => {
         console.log(`item ${item.id} sent and deleted locally`);
-      });      
+      });
       this.snackbar.open('Offline data push Successfully, Please refresh browser.', 'Close', {
         duration: 3000
       });
@@ -108,13 +108,13 @@ export class InterceptorService {
 
   public resendData = (url, data, type) => {
     switch (type) {
-      case "POST":
+      case 'POST':
         return this.httpClient.post(url, data).pipe(map(x => x));
         break;
-      case "PUT":
+      case 'PUT':
         return this.httpClient.put(url, data).pipe(map(x => x));
         break;
-      case "DELETE":
+      case 'DELETE':
         return this.httpClient.delete(url).pipe(map(x => x));
         break;
     }

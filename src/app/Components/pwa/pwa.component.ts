@@ -16,13 +16,13 @@ import { OnlineOfflineService } from 'src/app/Shared/services/onlineoffline/onli
 })
 export class PwaComponent implements OnInit, OnDestroy {
   public displayedColumns = [
-    //'id',
+    // 'id',
     'name',
     'salary',
     'age'
   ];
   public getHeader = [
-    //{ key: 'id', value: '#Employee Id' },
+    // { key: 'id', value: '#Employee Id' },
     { key: 'name', value: 'Employee Name' },
     { key: 'salary', value: 'Salary' },
     { key: 'age', value: 'Age' }
@@ -60,9 +60,9 @@ export class PwaComponent implements OnInit, OnDestroy {
     this.getAllIncomingEmployeesSubscription = this.pwaService
       .getAllEmployees()
       .subscribe(response => {
-        for (var item in response) {
+        for (const item in response) {
           let temp = response[item];
-          temp = { ...temp, id: item }
+          temp = { ...temp, id: item };
           this.TempDetails.push(temp);
         }
         this.searchInfo = this.TempDetails;
@@ -87,7 +87,7 @@ export class PwaComponent implements OnInit, OnDestroy {
               age: modeldata.age,
               name: modeldata.name,
               salary: modeldata.salary,
-              id: response['name']
+              id: response[`name`]
             });
             this.snackbar.open('Employee ' + input + 'ed Successfully', 'Close', {
               duration: 3000
@@ -100,7 +100,7 @@ export class PwaComponent implements OnInit, OnDestroy {
         });
         break;
       case 'Update':
-        if (modeldata["id"] !== undefined) {
+        if (modeldata[`id`] !== undefined) {
           this.pwaService.employeeUpdate(modeldata).subscribe(response => {
             if (response != null) {
               this.snackbar.open('Employee ' + input + 'ed Successfully', 'Close', {
@@ -153,8 +153,8 @@ export class PwaComponent implements OnInit, OnDestroy {
   }
   // Confirm Delete Employee
   confirmDelete = () => {
-    if (this.DeleteEmployeeDetails['id'] !== undefined) {
-      this.searchInfo = this.searchInfo.filter(x => x[`id`] !== this.DeleteEmployeeDetails['id']);
+    if (this.DeleteEmployeeDetails[`id`] !== undefined) {
+      this.searchInfo = this.searchInfo.filter(x => x[`id`] !== this.DeleteEmployeeDetails.id);
       this.pwaService.employeeDelete(this.DeleteEmployeeDetails).subscribe(
         response => {
           this.snackbar.open('Employee deleted Successfully', 'Close', {
@@ -162,7 +162,7 @@ export class PwaComponent implements OnInit, OnDestroy {
           });
           this.DeleteModal.hide();
           const index = this.searchInfo.findIndex(
-            x => x['id'] === this.DeleteEmployeeDetails['id']
+            x => x[`id`] === this.DeleteEmployeeDetails[`id`]
           );
           if (index !== -1) {
             this.searchInfo.splice(index, 1);
