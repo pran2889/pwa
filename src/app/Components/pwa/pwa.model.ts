@@ -1,7 +1,7 @@
 export interface IIncomingModel {
-    id: number,
-    employee_name: string,
-    employee_salary: string,
-    employee_age: number
+    id: string,
+    name: string,
+    salary: string,
+    age: number,
     profile_image: string
 }

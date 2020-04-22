@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import {
   HttpHandler,
   HttpRequest,
@@ -20,7 +21,8 @@ export class InterceptorService {
   private apiCount: number;
   constructor(
     private httpClient: HttpClient,
-    private onlineOfflineService: OnlineOfflineService
+    private onlineOfflineService: OnlineOfflineService,
+    private snackbar: MatSnackBar,
   ) {
     this.registerToEvents(onlineOfflineService);
   }
@@ -97,6 +99,9 @@ export class InterceptorService {
       this.resendData(item.url, item.body, item.type).subscribe();
       this.indexDb.spaceAuto.delete(item.id).then(() => {
         console.log(`item ${item.id} sent and deleted locally`);
+      });      
+      this.snackbar.open('Offline data push Successfully, Please refresh browser.', 'Close', {
+        duration: 3000
       });
     });
   }
@@ -110,7 +115,7 @@ export class InterceptorService {
         return this.httpClient.put(url, data).pipe(map(x => x));
         break;
       case "DELETE":
-        return this.httpClient.delete(url, data).pipe(map(x => x));
+        return this.httpClient.delete(url).pipe(map(x => x));
         break;
     }
   }

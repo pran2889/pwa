@@ -7,6 +7,8 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { DatePipe } from '@angular/common';
 import { MediumModalComponent } from 'src/app/Shared/components/modals/medium-modal/medium-modal.component';
 
+import { OnlineOfflineService } from 'src/app/Shared/services/onlineoffline/onlineoffline.service';
+
 @Component({
   selector: 'app-pwa',
   templateUrl: './pwa.component.html',
@@ -14,18 +16,16 @@ import { MediumModalComponent } from 'src/app/Shared/components/modals/medium-mo
 })
 export class PwaComponent implements OnInit, OnDestroy {
   public displayedColumns = [
-    'id',
-    'employee_name',
-    'employee_salary',
-    'employee_age',
-    'profile_image'
+    //'id',
+    'name',
+    'salary',
+    'age'
   ];
   public getHeader = [
-    { key: 'id', value: '#Employee Id' },
-    { key: 'employee_name', value: 'Employee Name' },
-    { key: 'employee_salary', value: 'Salary' },
-    { key: 'employee_age', value: 'Age' },
-    { key: 'profile_image', value: 'Photo' }
+    //{ key: 'id', value: '#Employee Id' },
+    { key: 'name', value: 'Employee Name' },
+    { key: 'salary', value: 'Salary' },
+    { key: 'age', value: 'Age' }
   ];
 
   public filterArray: string[] = [];
@@ -48,7 +48,8 @@ export class PwaComponent implements OnInit, OnDestroy {
   constructor(
     private pwaService: PwaService,
     private snackbar: MatSnackBar,
-    private datePipe: DatePipe
+    private datePipe: DatePipe,
+    private onlineOfflineService: OnlineOfflineService,
   ) { }
 
   ngOnInit() {
@@ -59,7 +60,12 @@ export class PwaComponent implements OnInit, OnDestroy {
     this.getAllIncomingEmployeesSubscription = this.pwaService
       .getAllEmployees()
       .subscribe(response => {
-        this.searchInfo = this.TempDetails = response[`data`];
+        for (var item in response) {
+          let temp = response[item];
+          temp = { ...temp, id: item }
+          this.TempDetails.push(temp);
+        }
+        this.searchInfo = this.TempDetails;
       });
   }
 
@@ -68,13 +74,20 @@ export class PwaComponent implements OnInit, OnDestroy {
     modeldata.createdby = `employee`;
     switch (input) {
       case 'Insert':
+        if (!this.onlineOfflineService.isOnline) {
+          this.searchInfo.push({
+            age: modeldata.age,
+            name: modeldata.name,
+            salary: modeldata.salary
+          });
+        }
         this.pwaService.employeeInsert(modeldata).subscribe(response => {
-          if (response && response[`data`]) {
+          if (response != null) {
             this.searchInfo.push({
-              id: response['data']['id'],
-              employee_name: response['data']['name'],
-              employee_salary: response['data']['salary'],
-              employee_age: response['data']['age'],
+              age: modeldata.age,
+              name: modeldata.name,
+              salary: modeldata.salary,
+              id: response['name']
             });
             this.snackbar.open('Employee ' + input + 'ed Successfully', 'Close', {
               duration: 3000
@@ -87,17 +100,23 @@ export class PwaComponent implements OnInit, OnDestroy {
         });
         break;
       case 'Update':
-        this.pwaService.employeeUpdate(modeldata).subscribe(response => {
-          if (response['status'] == "success") {
-            this.snackbar.open('Employee ' + input + 'ed Successfully', 'Close', {
-              duration: 3000
-            });
-          } else {
-            this.snackbar.open('Employee ' + input + 'ion Failed', 'Close', {
-              duration: 3000
-            });
-          }
-        });
+        if (modeldata["id"] !== undefined) {
+          this.pwaService.employeeUpdate(modeldata).subscribe(response => {
+            if (response != null) {
+              this.snackbar.open('Employee ' + input + 'ed Successfully', 'Close', {
+                duration: 3000
+              });
+            } else {
+              this.snackbar.open('Employee ' + input + 'ion Failed', 'Close', {
+                duration: 3000
+              });
+            }
+          });
+        } else {
+          this.snackbar.open('You can not update offine record, Please refresh page.', 'Close', {
+            duration: 3000
+          });
+        }
         break;
       case 'Delete':
         this.pwaService.employeeDelete(modeldata).subscribe(response => {
@@ -124,7 +143,6 @@ export class PwaComponent implements OnInit, OnDestroy {
 
   startEdit = (event, EmployeeDetails) => {
     this.Button = 'Update';
-    EmployeeDetails.DeliveryDate = new Date(EmployeeDetails.DeliveryDate)
     this.incomingEmployeeModel = EmployeeDetails;
     this.largeEmployeeModal.show();
   }
@@ -135,26 +153,34 @@ export class PwaComponent implements OnInit, OnDestroy {
   }
   // Confirm Delete Employee
   confirmDelete = () => {
-    this.pwaService.employeeDelete(this.DeleteEmployeeDetails).subscribe(
-      response => {
-        this.snackbar.open('Employee deleted Successfully', 'Close', {
-          duration: 3000
-        });
-        this.DeleteModal.hide();
-        const index = this.searchInfo.findIndex(
-          x => x['id'] === this.DeleteEmployeeDetails['id']
-        );
-        if (index !== -1) {
-          this.searchInfo.splice(index, 1);
+    if (this.DeleteEmployeeDetails['id'] !== undefined) {
+      this.searchInfo = this.searchInfo.filter(x => x[`id`] !== this.DeleteEmployeeDetails['id']);
+      this.pwaService.employeeDelete(this.DeleteEmployeeDetails).subscribe(
+        response => {
+          this.snackbar.open('Employee deleted Successfully', 'Close', {
+            duration: 3000
+          });
+          this.DeleteModal.hide();
+          const index = this.searchInfo.findIndex(
+            x => x['id'] === this.DeleteEmployeeDetails['id']
+          );
+          if (index !== -1) {
+            this.searchInfo.splice(index, 1);
+          }
+        },
+        error => {
+          // this.snackbar.open('Employee deletion failed', 'Close', {
+          //   duration: 3000
+          // });
+          this.DeleteModal.hide();
         }
-      },
-      error => {
-        this.snackbar.open('Employee deletion failed', 'Close', {
-          duration: 3000
-        });
-        this.DeleteModal.hide();
-      }
-    );
+      );
+    } else {
+      this.snackbar.open('You can not delete offine record, Please refresh list.', 'Close', {
+        duration: 3000
+      });
+      this.DeleteModal.hide();
+    }
   }
 
   // Filter Table

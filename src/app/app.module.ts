@@ -16,6 +16,10 @@ import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { InterceptorService } from './Shared/services/interceptor/interceptor.service';
 import { CommonModule, DatePipe } from '@angular/common';
 import { ModalModule } from 'ngx-bootstrap';
+
+import { AngularFireModule } from '@angular/fire';
+import { AngularFirestoreModule } from '@angular/fire/firestore';
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -36,6 +40,8 @@ import { ModalModule } from 'ngx-bootstrap';
     MaterialModule,
     HttpClientModule,
     ModalModule.forRoot(),
+    AngularFireModule.initializeApp(environment.firebase),
+    AngularFirestoreModule,
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: InterceptorService, multi: true }, DatePipe],

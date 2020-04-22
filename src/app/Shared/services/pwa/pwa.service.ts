@@ -10,11 +10,11 @@ export class PwaService {
   constructor(private httpClient: HttpClient) { }
 
   getAllEmployees = () => {
-    const url = environment.apiUrl + `/api/v1/employees`;
+    const url = environment.apiUrl + `/employee.json`;
     return this.httpClient.get(url).pipe(map(x => x));
   }
   getEmployeeById = (empId) => {
-    const url = environment.apiUrl + `/api/v1/employee`;
+    const url = environment.apiUrl + `/employee.json`;
     const data = {
       id: empId
     };
@@ -32,24 +32,24 @@ export class PwaService {
   }
   employeeInsert = (model) => {
     const data = {
-      "name": model.employee_name,
-      "salary": model.employee_salary,
-      "age": model.employee_age
+      "name": model.name,
+      "salary": model.salary,
+      "age": model.age
     };
-    const url = `${environment.apiUrl}/api/v1/create`;
+    const url = `${environment.apiUrl}/employee.json`;
     return this.httpClient.post(url, data).pipe(map(x => x));
   }
   employeeUpdate = (model) => {
     const data = {
-      "name": model.employee_name,
-      "salary": model.employee_salary,
-      "age": model.employee_age
+      "name": model.name,
+      "salary": model.salary,
+      "age": model.age
     };
-    const url = `${environment.apiUrl}/api/v1/update/` + model.id;
+    const url = `${environment.apiUrl}/employee/` + model.id+`.json`;
     return this.httpClient.put(url, data).pipe(map(x => x));
   }
   employeeDelete = (model) => {
-    const url = `${environment.apiUrl}/api/v1/delete/` + model.id;
+    const url = `${environment.apiUrl}/employee/` + model.id+`.json`;
     return this.httpClient.delete(url).pipe(map(x => x));
   }
 
