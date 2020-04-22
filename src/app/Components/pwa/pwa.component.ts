@@ -154,7 +154,7 @@ export class PwaComponent implements OnInit, OnDestroy {
   // Confirm Delete Employee
   confirmDelete = () => {
     if (this.DeleteEmployeeDetails[`id`] !== undefined) {
-      this.searchInfo = this.searchInfo.filter(x => x[`id`] !== this.DeleteEmployeeDetails.id);
+      this.searchInfo = this.searchInfo.filter(x => x[`id`] !== this.DeleteEmployeeDetails[`id`]);
       this.pwaService.employeeDelete(this.DeleteEmployeeDetails).subscribe(
         response => {
           this.snackbar.open('Employee deleted Successfully', 'Close', {
